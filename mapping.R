@@ -6,6 +6,8 @@ library(sf)
 library(rgdal)
 library(rgeos)
 library(cleangeo)
+library(here)
+
 
 ###CEDAR CREEK###
 
@@ -16,7 +18,7 @@ library(cleangeo)
 
 #Read in the data. You should see ~5,000 parcels with geometries and owner info. 
 #We really don't need that extra information, so we will remove in a bit
-cedar_creek = st_read("./CCWRF/CCWRF.shp")
+cedar_creek = st_read("/Users/danielsuh/Desktop/wbe_athens_ga_mapping/CCWRF/CCWRF.shp")
 
 #Add an additional column, speficying the WRF, so that we can join by this common variable
 cedar_creek$wrf = "CC"

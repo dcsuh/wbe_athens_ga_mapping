@@ -5,10 +5,10 @@ library(sf)
 library(plyr)
 library(RColorBrewer)
 library(heat.col)
-
+library(here)
 
 #load viral data and then clean. Here, we're summarizing the two targets into a single value, by averaging.
-n1_n2 = read.csv("./n1_n2_cleaned.csv")
+n1_n2 = read.csv("n1_n2_cleaned.csv")
 n1_n2 = mutate(n1_n2, log_total_copies= log10(mean_total_copies))
 n1_n2 = plyr::ddply(n1_n2, c("wrf", "date"), summarize, total_copies = mean(log_total_copies))
 n1_n2 = n1_n2 %>% select(wrf, date, target, log_total_copies)
@@ -19,7 +19,14 @@ n1_n2_catchment = left_join(wrf_catchment, n1_n2, by = "wrf")
 n1_n2_catchment = as(n1_n2_catchment, "sf")
 
 #Right now, we can only look at one date at a time, until we can animate/add slider/tabs.
-n1_n2_catchment = n1_n2_catchment %>% filter(date == "2020-10-20")
+#n1_n2_catchment = n1_n2_catchment %>% filter(date == "2020-10-20")
+
+
+i <- 1
+DATE <- dates[i]
+plot <- n1_n2_catchment %>% filter(date == DATE) %>% mapview(., zcol = "total_copies", at = seq(10, 16, 1))
+plot
+
 
 #And map, using Leaflet's mapview.
 mapview(n1_n2_catchment, zcol = "total_copies", at = seq(10, 16, 1))
