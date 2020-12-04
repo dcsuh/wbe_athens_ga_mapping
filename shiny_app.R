@@ -14,31 +14,29 @@ library(here)
 n1_n2 = read.csv("n1_n2_cleaned.csv")
 n1_n2 = mutate(n1_n2, log_total_copies= log10(mean_total_copies))
 n1_n2 = plyr::ddply(n1_n2, c("wrf", "date"), summarize, total_copies = mean(log_total_copies))
-n1_n2 = n1_n2 %>% select(wrf, date, target, log_total_copies)
+#n1_n2 = n1_n2 %>% select(wrf, date, target, log_total_copies)
 
 #now join the viral data to the catchment regions.
 wrf_catchment = st_read("./wrf_catchment/wrf_catchment.shp")
 n1_n2_catchment = left_join(wrf_catchment, n1_n2, by = "wrf")
 n1_n2_catchment = as(n1_n2_catchment, "sf")
-dates <- c(as.factor(n1_n2_catchment$date))
+
+filtered <- n1_n2_catchment %>% filter(date == n1_n2_catchment$date[1])
+
+
+
 
 ui <- pageWithSidebar(
   headerPanel("Title"),
   sidebarPanel(
-    numericInput("week", "week", value=1), 
+    numericInput("week", label = "week", value=1), 
   ),
   mainPanel(
-    leafletOutput("map"),
+    mapviewOutput("map"),
     textOutput("text")
   )
 )
 
-server <- function(input, output) {
-  output$map <- renderLeaflet({
-    map <- n1_n2_catchment %>% filter(date == dates[input$week]) %>% mapview(., zcol = "total_copies", at = seq(10, 16, 1))
-    map@map
-  })
-}
 
 server <- function(input, output){
 data <- reactive({
@@ -53,9 +51,26 @@ output$text <- renderText({
 
 output$map <- renderLeaflet({
   data <- data()
-  mapview(data, zcol = "total_copies", at = seq(10, 16, 1))@map
+  mapview(data, zcol = "total_copies", at = seq(10, 16, 1))
   })
 }
 
+
+ui <- fluidPage(
+  leafletOutput("map")
+)
+
+server <- function(input, output) {
+  output$map <- renderLeaflet({
+    leaflet() %>% addTiles()
+  })
+}
+
+
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+
+
+
+

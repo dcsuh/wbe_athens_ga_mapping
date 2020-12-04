@@ -22,14 +22,16 @@ n1_n2_catchment = as(n1_n2_catchment, "sf")
 #n1_n2_catchment = n1_n2_catchment %>% filter(date == "2020-10-20")
 
 
-i <- 1
-DATE <- dates[i]
-plot <- n1_n2_catchment %>% filter(date == DATE) %>% mapview(., zcol = "total_copies", at = seq(10, 16, 1))
-plot
 
+plot <- n1_n2_catchment %>% filter(date == n1_n2_catchment$date[2]) %>% mapview(., zcol = "total_copies", at = seq(10, 16, 1))
+plot 
 
 #And map, using Leaflet's mapview.
 mapview(n1_n2_catchment, zcol = "total_copies", at = seq(10, 16, 1))
+
+
+leaflet(n1_n2_catchment) %>% addPolygons()
+
 
 
 ###STOP HERE###
